@@ -3,7 +3,8 @@
 <div align="center">
   <img src="public/icon.png" alt="Antigravity Logo" width="120" height="120" style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
 
-  <h3>Professional Account Management</h3>
+  <h3>Professional Account Management for AI Services</h3>
+  <p>Manage your Gemini / Claude accounts with ease. Unlimited Possibilities.</p>
   
   <p>
     <a href="https://github.com/lbjlaq/Antigravity-Manager">
@@ -11,19 +12,70 @@
     </a>
     <img src="https://img.shields.io/badge/Tauri-v2-orange?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square" alt="React">
-    <img src="https://img.shields.io/badge/Rust-Enabled-black?style=flat-square" alt="Rust">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+  </p>
+
+  <p>
+    <a href="#-Downloads">📥 下载最新版 (macOS/Windows/Linux)</a> • 
+    <a href="#-Features">✨ 核心特性</a> • 
+    <a href="#-Comparison">🆚 版本对比</a>
+  </p>
+
+  <p>
+    <strong>🇨🇳 简体中文</strong> | 
+    <a href="./README_EN.md">🇺🇸 English</a>
   </p>
 </div>
 
 ---
 
-**Antigravity Tools** 是 [Antigravity Manager](https://github.com/lbjlaq/Antigravity-Manager) 项目的全新 2.0 重构版本。
+---
 
-基于 **Tauri v2** + **React** 构建，旨在提供更轻量、更高性能且安全隐私的现代化账号管理体验。专为管理 Google/Claude 等 AI 服务账号配额而设计，支持多账号无缝切换与状态监控。
+<div align="center">
+  <img src="docs/images/accounts-dark.png" alt="Antigravity Dark Mode" style="border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 100%; max-width: 800px;">
+  <p><i>（Deep Dark: 沉浸式暗色模式，专注开发）</i></p>
+</div>
+
+## 🎨 界面预览 (Gallery)
+
+<div align="center">
+
+| **Light Mode (清爽明亮)** | **Dark Mode (深邃护眼)** |
+| :---: | :---: |
+| <img src="docs/images/dashboard-light.png" width="100%" style="border-radius: 8px;"> | <img src="docs/images/accounts-dark.png" width="100%" style="border-radius: 8px;"> |
+| **仪表盘 Dashboard** | **账号管理 Accounts** |
+
+| <img src="docs/images/accounts-light.png" width="100%" style="border-radius: 8px;"> | <img src="docs/images/settings-dark.png" width="100%" style="border-radius: 8px;"> |
+| **列表视图 List View** | **全局设置 Settings** |
+
+</div>
+
+---
+
+**Antigravity Tools** 是一款专为 AI 开发者和重度用户打造的 **现代化账号管理工具**。
+
+作为 [Antigravity Manager](https://github.com/lbjlaq/Antigravity-Manager) 的 2.0 重构版本，它采用了高性能的 **[Tauri v2](https://v2.tauri.app/)** + **[React](https://react.dev/)** 技术栈，将原本笨重的 Python GUI 进化为轻量、极速的原生应用。
+
+它可以帮助你轻松管理数十个 **Google Gemini**、**Claude 3.5** 等 AI 服务账号，实时监控配额（Quota），并在配额耗尽时智能切换，助你实现 "无限" 的 AI 调用体验。
 
 > ⚠️ **注意**: 本项目仓库地址保持不变，继续沿用 [lbjlaq/Antigravity-Manager](https://github.com/lbjlaq/Antigravity-Manager)。
+>
+> **寻找 1.0 版本?**
+> v1.0 (Python/Flet) 版本的完整源码已归档至 [v1 分支](https://github.com/lbjlaq/Antigravity-Manager/tree/v1)。如需查看或维护旧版，请切换分支查看。
 
-## ✨ 功能特性 (Features)
+## 🆚 为什么选择 2.0 ? (Comparison)
+
+| 特性 Comparison | 🐢 v1.0 (Legacy) | 🚀 v2.0 (New) | 提升 |
+| :--- | :--- | :--- | :--- |
+| **技术核心** | Python + Flet | **Rust (Tauri)** + **React** | **性能质变** |
+| **安装包大小** | ~80 MB | **~10 MB** | **体积减少 87%** |
+| **启动速度** | 慢 (需加载 Python 解释器) | **秒开** (原生二进制) | **极速响应** |
+| **内存占用** | 高 (>200MB) | **极低** (<50MB) | **更省资源** |
+| **界面交互** | 基础 Material 风格 | **现代化 Glassmorphism** | **颜值正义** |
+| **安全性** | 明文/简单混淆 | **SQLite 加密存储** | **隐私无忧** |
+| **扩展性** | 难 (Python 依赖地狱) | **易** (标准 Web 技术栈) | **生态丰富** |
+
+## ✨ 核心特性 (Features)
 
 ### 📊 仪表盘 (Dashboard)
 - **全局概览**: 实时展示账号总数、各模型平均配额，健康度一目了然。
@@ -34,8 +86,8 @@
 - **多渠道导入**:
     - 🔥 **OAuth 授权**: 支持拉起浏览器进行 Google 登录授权，自动获取 Token (推荐)。
     - 📋 **手动添加**: 支持直接粘贴 Refresh Token 进行添加。
-    - 📂 **V1 迁移**: 支持从 v1 版本 (~/.antigravity-agent) 自动扫描并批量导入旧数据。
-    - 🔄 **本地同步**: 支持从 IDE 本地数据库自动读取并导入当前登录账号。
+    - 📂 **V1 迁移**: 支持从 v1 版本 (`~/.antigravity-agent`) 自动扫描并批量导入旧数据。
+    - 🔄 **本地同步**: 支持从 IDE (Cursor/Windsurf) 本地数据库自动读取并导入当前登录账号。
 - **批量操作**: 提供批量刷新配额、批量导出备份 (JSON)、批量删除功能。
 - **搜索过滤**: 支持按邮箱关键字快速检索，管理数十个账号依然轻松。
 
@@ -61,7 +113,7 @@
 | 模块 | 技术选型 | 说明 |
 | :--- | :--- | :--- |
 | **Frontend** | React 18 + TypeScript | UI 构建与逻辑处理 |
-| **Styling** | TailwindCSS + DaisyUI | 现代化原子类样式库 |
+| **UI Framework** | TailwindCSS + DaisyUI | 现代化原子类样式库 |
 | **Backend** | Tauri v2 (Rust) | 高性能、安全的系统底层交互 |
 | **Database** | SQLite (rusqlite) | 本地数据持久化存储 |
 | **State** | Zustand | 轻量级全局状态管理 |
@@ -69,13 +121,17 @@
 
 ## 📦 安装与运行
 
-### 前置要求
+### 📥 下载安装
 
-确保本地已安装：
-- [Node.js](https://nodejs.org/) (推荐 v18+)
-- [Rust](https://www.rust-lang.org/) (最新稳定版)
+前往 [Releases 页面](https://github.com/lbjlaq/Antigravity-Manager/releases) 下载对应系统的安装包：
 
-### 开发环境启动
+- **macOS**: 支持 Intel (`.dmg`) 和 Apple Silicon (`.dmg`)
+- **Windows**: `.exe` 安装包
+- **Linux**: `.deb` 或 `.AppImage` *(理论支持，尚未经完整测试，欢迎反馈)*
+
+### 💻 开发环境启动
+
+如果您是开发者，想要贡献代码：
 
 ```bash
 # 1. 克隆项目
@@ -88,7 +144,7 @@ npm install
 npm run tauri dev
 ```
 
-### 构建发布
+### 🏗️ 构建发布
 
 ```bash
 # 构建通用 macOS 应用 (同时支持 Intel & Apple Silicon)
@@ -105,3 +161,5 @@ npm run build:universal
 ## 📄 版权说明
 
 Copyright © 2025 Antigravity. All rights reserved.
+MIT License
+
