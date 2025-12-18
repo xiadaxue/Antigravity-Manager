@@ -24,6 +24,19 @@ pub struct ProxyConfig {
     /// API 请求超时时间(秒)
     #[serde(default = "default_request_timeout")]
     pub request_timeout: u64,
+
+    /// 上游代理配置
+    #[serde(default)]
+    pub upstream_proxy: UpstreamProxyConfig,
+}
+
+/// 上游代理配置
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct UpstreamProxyConfig {
+    /// 是否启用
+    pub enabled: bool,
+    /// 代理地址 (http://, https://, socks5://)
+    pub url: String,
 }
 
 impl Default for ProxyConfig {
@@ -35,6 +48,7 @@ impl Default for ProxyConfig {
             auto_start: false,
             anthropic_mapping: std::collections::HashMap::new(),
             request_timeout: default_request_timeout(),
+            upstream_proxy: UpstreamProxyConfig::default(),
         }
     }
 }

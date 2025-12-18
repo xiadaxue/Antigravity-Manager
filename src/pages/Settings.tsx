@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Github, User, MessageCircle, ExternalLink, RefreshCw } from 'lucide-react';
+import { Save, Github, User, MessageCircle, ExternalLink, RefreshCw, Sparkles } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useConfigStore } from '../stores/useConfigStore';
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 function Settings() {
     const { t } = useTranslation();
     const { config, loadConfig, saveConfig } = useConfigStore();
-    const [activeTab, setActiveTab] = useState<'general' | 'account' | 'advanced' | 'about'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'account' | 'proxy' | 'advanced' | 'about'>('general');
     const [formData, setFormData] = useState<AppConfig>({
         language: 'zh',
         theme: 'system',
@@ -20,6 +20,17 @@ function Settings() {
         refresh_interval: 15,
         auto_sync: false,
         sync_interval: 5,
+        proxy: {
+            enabled: false,
+            port: 8080,
+            api_key: '',
+            auto_start: false,
+            request_timeout: 120,
+            upstream_proxy: {
+                enabled: false,
+                url: ''
+            }
+        }
     });
 
     // Dialog state
@@ -148,6 +159,15 @@ function Settings() {
                             onClick={() => setActiveTab('account')}
                         >
                             {t('settings.tabs.account')}
+                        </button>
+                        <button
+                            className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'proxy'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                                }`}
+                            onClick={() => setActiveTab('proxy')}
+                        >
+                            {t('settings.tabs.proxy')}
                         </button>
                         <button
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'advanced'
@@ -358,7 +378,76 @@ function Settings() {
                         </div>
                     )}
 
-                    {/* 关于 */}
+                    {/* 代理设置 */}
+                    {activeTab === 'proxy' && (
+                        <div className="space-y-6">
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-base-content">{t('settings.tabs.proxy')}</h2>
+
+                            <div className="p-4 bg-gray-50 dark:bg-base-200 rounded-lg border border-gray-100 dark:border-base-300">
+                                <h3 className="text-md font-semibold text-gray-900 dark:text-base-content mb-3 flex items-center gap-2">
+                                    <Sparkles size={18} className="text-blue-500" />
+                                    {t('proxy.config.upstream_proxy.title')}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                    {t('proxy.config.upstream_proxy.desc')}
+                                </p>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center">
+                                        <label className="flex items-center cursor-pointer gap-3">
+                                            <div className="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only"
+                                                    checked={formData.proxy?.upstream_proxy?.enabled || false}
+                                                    onChange={(e) => setFormData({
+                                                        ...formData,
+                                                        proxy: {
+                                                            ...formData.proxy,
+                                                            upstream_proxy: {
+                                                                ...formData.proxy.upstream_proxy,
+                                                                enabled: e.target.checked
+                                                            }
+                                                        }
+                                                    })}
+                                                />
+                                                <div className={`block w-14 h-8 rounded-full transition-colors ${formData.proxy?.upstream_proxy?.enabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-base-300'}`}></div>
+                                                <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${formData.proxy?.upstream_proxy?.enabled ? 'transform translate-x-6' : ''}`}></div>
+                                            </div>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-base-content">
+                                                {t('proxy.config.upstream_proxy.enable')}
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            {t('proxy.config.upstream_proxy.url')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.proxy?.upstream_proxy?.url || ''}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                proxy: {
+                                                    ...formData.proxy,
+                                                    upstream_proxy: {
+                                                        ...formData.proxy.upstream_proxy,
+                                                        url: e.target.value
+                                                    }
+                                                }
+                                            })}
+                                            placeholder={t('proxy.config.upstream_proxy.url_placeholder')}
+                                            className="w-full px-4 py-4 border border-gray-200 dark:border-base-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-base-content bg-gray-50 dark:bg-base-200"
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            {t('proxy.config.upstream_proxy.tip')}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {activeTab === 'about' && (
                         <div className="flex flex-col h-full animate-in fade-in duration-500">
                             <div className="flex-1 flex flex-col justify-center items-center space-y-8">

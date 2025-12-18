@@ -12,7 +12,7 @@ pub async fn fetch_project_id(access_token: &str) -> Result<String, String> {
         }
     });
     
-    let client = Client::new();
+    let client = crate::utils::http::create_client(30);
     let response = client
         .post(url)
         .bearer_auth(access_token)

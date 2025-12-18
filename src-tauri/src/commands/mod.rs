@@ -325,7 +325,7 @@ pub async fn check_for_updates() -> Result<UpdateInfo, String> {
     modules::logger::log_info("开始检测更新...");
     
     // 发起 HTTP 请求
-    let client = reqwest::Client::new();
+    let client = crate::utils::http::create_client(15);
     let response = client
         .get(GITHUB_API_URL)
         .header("User-Agent", "Antigravity-Tools")

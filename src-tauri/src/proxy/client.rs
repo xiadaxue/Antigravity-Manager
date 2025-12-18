@@ -13,10 +13,7 @@ pub struct GeminiClient {
 impl GeminiClient {
     pub fn new(timeout_secs: u64) -> Self {
         Self {
-            client: Client::builder()
-                .timeout(std::time::Duration::from_secs(timeout_secs))
-                .build()
-                .unwrap(),
+            client: crate::utils::http::create_client(timeout_secs),
         }
     }
     

@@ -18,6 +18,7 @@ pub struct AppState {
     pub anthropic_mapping: Arc<tokio::sync::RwLock<std::collections::HashMap<String, String>>>,
     pub request_timeout: u64,  // API 请求超时(秒)
     pub thought_signature_map: Arc<tokio::sync::Mutex<std::collections::HashMap<String, String>>>, // 思维链签名映射 (ID -> Signature)
+    pub upstream_proxy: crate::proxy::config::UpstreamProxyConfig,
 }
 
 /// Axum 服务器实例
@@ -38,15 +39,17 @@ impl AxumServer {
         port: u16,
         token_manager: Arc<TokenManager>,
         anthropic_mapping: std::collections::HashMap<String, String>,
-        request_timeout: u64,  // 新增超时参数
+        request_timeout: u64,
+        upstream_proxy: crate::proxy::config::UpstreamProxyConfig,
     ) -> Result<(Self, tokio::task::JoinHandle<()>), String> {
         let mapping_state = Arc::new(tokio::sync::RwLock::new(anthropic_mapping));
-        
+
         let state = AppState {
             token_manager,
             anthropic_mapping: mapping_state.clone(),
             request_timeout,
             thought_signature_map: Arc::new(tokio::sync::Mutex::new(std::collections::HashMap::new())),
+            upstream_proxy,
         };
         
         // 构建路由

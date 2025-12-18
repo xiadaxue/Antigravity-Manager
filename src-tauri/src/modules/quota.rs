@@ -34,10 +34,7 @@ struct LoadProjectResponse {
 
 /// 创建配置好的 HTTP Client
 fn create_client() -> reqwest::Client {
-    reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(15))
-        .build()
-        .unwrap_or_default()
+    crate::utils::http::create_client(15)
 }
 
 /// 获取 Project ID

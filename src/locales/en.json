@@ -155,6 +155,7 @@
         "tabs": {
             "general": "General",
             "account": "Account",
+            "proxy": "Proxy",
             "advanced": "Advanced",
             "about": "About"
         },
@@ -241,7 +242,15 @@
             "btn_copied": "Copied",
             "warning_key": "Note: Keep your API key secure. Do not share it.",
             "request_timeout": "Request Timeout",
-            "request_timeout_hint": "Default 120s, range 30-600s. Restart service to apply changes."
+            "request_timeout_hint": "Default 120s, range 30-600s. Restart service to apply changes.",
+            "upstream_proxy": {
+                "title": "Global Upstream Proxy (Global Proxy)",
+                "desc": "When enabled, all external requests (API Proxy, Token Refresh, Quota Check, Update Check) will be routed through this proxy.",
+                "enable": "Enable Upstream Proxy",
+                "url": "Proxy URL",
+                "url_placeholder": "e.g. http://127.0.0.1:7890 or socks5://127.0.0.1:7890",
+                "tip": "Supports HTTP, HTTPS and SOCKS5."
+            }
         },
         "example": {
             "title": "Usage Examples",

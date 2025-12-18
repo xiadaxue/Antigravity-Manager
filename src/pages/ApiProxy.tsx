@@ -15,6 +15,7 @@ import {
     Zap,
     Cpu
 } from 'lucide-react';
+import { AppConfig, ProxyConfig } from '../types/config';
 
 interface ProxyStatus {
     running: boolean;
@@ -23,25 +24,6 @@ interface ProxyStatus {
     active_accounts: number;
 }
 
-interface ProxyConfig {
-    enabled: boolean;
-    port: number;
-    api_key: string;
-    auto_start: boolean;
-    anthropic_mapping?: Record<string, string>;
-    request_timeout: number;  // API 请求超时(秒)
-}
-
-interface AppConfig {
-    language: string;
-    theme: string;
-    auto_refresh: boolean;
-    refresh_interval: number;
-    auto_sync: boolean;
-    sync_interval: number;
-    default_export_path: string | null;
-    proxy: ProxyConfig;
-}
 
 export default function ApiProxy() {
     const { t } = useTranslation();
@@ -429,7 +411,6 @@ print(response.choices[0].message.content)`;
                                         value={appConfig.proxy.request_timeout || 120}
                                         onChange={(e) => {
                                             const value = parseInt(e.target.value);
-                                            // 限制范围 30-600 秒
                                             const timeout = Math.max(30, Math.min(600, value));
                                             updateProxyConfig({ request_timeout: timeout });
                                         }}
@@ -656,180 +637,184 @@ print(response.choices[0].message.content)`;
                 }
 
                 {/* 多协议支持信息 */}
-                {appConfig && status.running && (
-                    <div className="bg-white dark:bg-base-100 rounded-xl shadow-sm border border-gray-200 dark:border-base-200">
-                        <div className="p-5">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
-                                        <Code size={20} className="text-white" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-base-content">
-                                        🔗 {t('proxy.multi_protocol.title')}
-                                    </h3>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        {t('proxy.multi_protocol.subtitle')}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                                {t('proxy.multi_protocol.description')}
-                            </p>
-
-                            {/* 协议卡片 - 点击切换 */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                {/* OpenAI Protocol Card */}
-                                <div
-                                    className={`bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 rounded-lg p-4 border-2 transition-all cursor-pointer ${selectedProtocol === 'openai'
-                                        ? 'border-blue-500 dark:border-blue-600 shadow-md'
-                                        : 'border-blue-200 dark:border-blue-800/50 hover:border-blue-300'
-                                        }`}
-                                    onClick={() => setSelectedProtocol('openai')}
-                                >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-2 h-2 rounded-full ${selectedProtocol === 'openai' ? 'bg-blue-500 animate-pulse' : 'bg-blue-400'}`}></div>
-                                            <span className="text-sm font-bold text-blue-700 dark:text-blue-400">
-                                                {t('proxy.multi_protocol.openai_label')}
-                                            </span>
+                {
+                    appConfig && status.running && (
+                        <div className="bg-white dark:bg-base-100 rounded-xl shadow-sm border border-gray-200 dark:border-base-200">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+                                            <Code size={20} className="text-white" />
                                         </div>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                copyToClipboard(`${status.base_url}/v1/chat/completions`, 'openai_endpoint');
-                                            }}
-                                            className="p-1.5 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
-                                            title={t('proxy.config.btn_copy')}
-                                        >
-                                            {copied === 'openai_endpoint' ?
-                                                <CheckCircle size={16} className="text-green-600 dark:text-green-400" /> :
-                                                <Copy size={16} className="text-blue-600 dark:text-blue-400" />
-                                            }
-                                        </button>
                                     </div>
-                                    <div className="bg-white/60 dark:bg-gray-800/40 rounded px-3 py-2 mb-2 border border-blue-200/50 dark:border-blue-700/30">
-                                        <code className="text-xs font-mono text-gray-800 dark:text-gray-200 break-all">
-                                            POST /v1/chat/completions
-                                        </code>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-base-content">
+                                            🔗 {t('proxy.multi_protocol.title')}
+                                        </h3>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {t('proxy.multi_protocol.subtitle')}
+                                        </p>
                                     </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        💡 {t('proxy.multi_protocol.openai_tools')}
-                                    </p>
                                 </div>
 
-                                {/* Anthropic Protocol Card */}
-                                <div
-                                    className={`bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 rounded-lg p-4 border-2 transition-all cursor-pointer ${selectedProtocol === 'anthropic'
-                                        ? 'border-purple-500 dark:border-purple-600 shadow-md'
-                                        : 'border-purple-200 dark:border-purple-800/50 hover:border-purple-300'
-                                        }`}
-                                    onClick={() => setSelectedProtocol('anthropic')}
-                                >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-2 h-2 rounded-full ${selectedProtocol === 'anthropic' ? 'bg-purple-500 animate-pulse' : 'bg-purple-400'}`}></div>
-                                            <span className="text-sm font-bold text-purple-700 dark:text-purple-400">
-                                                {t('proxy.multi_protocol.anthropic_label')}
-                                            </span>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                                    {t('proxy.multi_protocol.description')}
+                                </p>
+
+                                {/* 协议卡片 - 点击切换 */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    {/* OpenAI Protocol Card */}
+                                    <div
+                                        className={`bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 rounded-lg p-4 border-2 transition-all cursor-pointer ${selectedProtocol === 'openai'
+                                            ? 'border-blue-500 dark:border-blue-600 shadow-md'
+                                            : 'border-blue-200 dark:border-blue-800/50 hover:border-blue-300'
+                                            }`}
+                                        onClick={() => setSelectedProtocol('openai')}
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${selectedProtocol === 'openai' ? 'bg-blue-500 animate-pulse' : 'bg-blue-400'}`}></div>
+                                                <span className="text-sm font-bold text-blue-700 dark:text-blue-400">
+                                                    {t('proxy.multi_protocol.openai_label')}
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    copyToClipboard(`${status.base_url}/v1/chat/completions`, 'openai_endpoint');
+                                                }}
+                                                className="p-1.5 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors"
+                                                title={t('proxy.config.btn_copy')}
+                                            >
+                                                {copied === 'openai_endpoint' ?
+                                                    <CheckCircle size={16} className="text-green-600 dark:text-green-400" /> :
+                                                    <Copy size={16} className="text-blue-600 dark:text-blue-400" />
+                                                }
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                copyToClipboard(`${status.base_url}/v1/messages`, 'anthropic_endpoint');
-                                            }}
-                                            className="p-1.5 rounded-md hover:bg-purple-200 dark:hover:bg-purple-900/40 transition-colors"
-                                            title={t('proxy.config.btn_copy')}
-                                        >
-                                            {copied === 'anthropic_endpoint' ?
-                                                <CheckCircle size={16} className="text-green-600 dark:text-green-400" /> :
-                                                <Copy size={16} className="text-purple-600 dark:text-purple-400" />
-                                            }
-                                        </button>
+                                        <div className="bg-white/60 dark:bg-gray-800/40 rounded px-3 py-2 mb-2 border border-blue-200/50 dark:border-blue-700/30">
+                                            <code className="text-xs font-mono text-gray-800 dark:text-gray-200 break-all">
+                                                POST /v1/chat/completions
+                                            </code>
+                                        </div>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                                            💡 {t('proxy.multi_protocol.openai_tools')}
+                                        </p>
                                     </div>
-                                    <div className="bg-white/60 dark:bg-gray-800/40 rounded px-3 py-2 mb-2 border border-purple-200/50 dark:border-purple-700/30">
-                                        <code className="text-xs font-mono text-gray-800 dark:text-gray-200 break-all">
-                                            POST /v1/messages
-                                        </code>
+
+                                    {/* Anthropic Protocol Card */}
+                                    <div
+                                        className={`bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 rounded-lg p-4 border-2 transition-all cursor-pointer ${selectedProtocol === 'anthropic'
+                                            ? 'border-purple-500 dark:border-purple-600 shadow-md'
+                                            : 'border-purple-200 dark:border-purple-800/50 hover:border-purple-300'
+                                            }`}
+                                        onClick={() => setSelectedProtocol('anthropic')}
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${selectedProtocol === 'anthropic' ? 'bg-purple-500 animate-pulse' : 'bg-purple-400'}`}></div>
+                                                <span className="text-sm font-bold text-purple-700 dark:text-purple-400">
+                                                    {t('proxy.multi_protocol.anthropic_label')}
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    copyToClipboard(`${status.base_url}/v1/messages`, 'anthropic_endpoint');
+                                                }}
+                                                className="p-1.5 rounded-md hover:bg-purple-200 dark:hover:bg-purple-900/40 transition-colors"
+                                                title={t('proxy.config.btn_copy')}
+                                            >
+                                                {copied === 'anthropic_endpoint' ?
+                                                    <CheckCircle size={16} className="text-green-600 dark:text-green-400" /> :
+                                                    <Copy size={16} className="text-purple-600 dark:text-purple-400" />
+                                                }
+                                            </button>
+                                        </div>
+                                        <div className="bg-white/60 dark:bg-gray-800/40 rounded px-3 py-2 mb-2 border border-purple-200/50 dark:border-purple-700/30">
+                                            <code className="text-xs font-mono text-gray-800 dark:text-gray-200 break-all">
+                                                POST /v1/messages
+                                            </code>
+                                        </div>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                                            💡 {t('proxy.multi_protocol.anthropic_tools')}
+                                        </p>
                                     </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        💡 {t('proxy.multi_protocol.anthropic_tools')}
-                                    </p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* 使用说明 */}
-                {appConfig && (
-                    <div className="bg-white dark:bg-base-100 rounded-xl shadow-sm border border-gray-100 dark:border-base-200 overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 dark:border-base-200">
-                            <h2 className="text-lg font-semibold text-gray-900 dark:text-base-content">{t('proxy.example.title')}</h2>
-                        </div>
-
-                        {/* Tabs */}
-                        <div className="flex border-b border-gray-100 dark:border-base-200 overflow-x-auto">
-                            {filteredModels.map((model) => (
-                                <button
-                                    key={model.id}
-                                    onClick={() => setActiveTab(model.id)}
-                                    className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${activeTab === model.id
-                                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/10'
-                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-base-200'
-                                        }`}
-                                >
-                                    {model.icon}
-                                    {model.name}
-                                    <span className="text-xs opacity-60 ml-1">({model.desc})</span>
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="p-4 space-y-4">
-                            <div>
-                                <h3 className="flex items-center justify-between font-medium mb-2 text-gray-900 dark:text-base-content">
-                                    <span className="flex items-center gap-2">
-                                        <Terminal size={16} />
-                                        {t('proxy.example.curl')}
-                                    </span>
-                                    <button
-                                        onClick={() => copyToClipboard(getCurlExample(activeTab), 'curl')}
-                                        className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700"
-                                    >
-                                        {copied === 'curl' ? <CheckCircle size={14} /> : <Copy size={14} />}
-                                        {copied === 'curl' ? t('proxy.config.btn_copied') : t('proxy.config.btn_copy')}
-                                    </button>
-                                </h3>
-                                <pre className="p-3 bg-gray-900 rounded-lg text-sm overflow-x-auto text-gray-100 font-mono">
-                                    {getCurlExample(activeTab)}
-                                </pre>
+                {
+                    appConfig && (
+                        <div className="bg-white dark:bg-base-100 rounded-xl shadow-sm border border-gray-100 dark:border-base-200 overflow-hidden">
+                            <div className="p-4 border-b border-gray-100 dark:border-base-200">
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-base-content">{t('proxy.example.title')}</h2>
                             </div>
 
-                            <div>
-                                <h3 className="flex items-center justify-between font-medium mb-2 text-gray-900 dark:text-base-content">
-                                    <span className="flex items-center gap-2">
-                                        <Code size={16} />
-                                        {t('proxy.example.python')}
-                                    </span>
+                            {/* Tabs */}
+                            <div className="flex border-b border-gray-100 dark:border-base-200 overflow-x-auto">
+                                {filteredModels.map((model) => (
                                     <button
-                                        onClick={() => copyToClipboard(getPythonExample(activeTab), 'python')}
-                                        className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                                        key={model.id}
+                                        onClick={() => setActiveTab(model.id)}
+                                        className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${activeTab === model.id
+                                            ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/10'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-base-200'
+                                            }`}
                                     >
-                                        {copied === 'python' ? <CheckCircle size={14} /> : <Copy size={14} />}
-                                        {copied === 'python' ? t('proxy.config.btn_copied') : t('proxy.config.btn_copy')}
+                                        {model.icon}
+                                        {model.name}
+                                        <span className="text-xs opacity-60 ml-1">({model.desc})</span>
                                     </button>
-                                </h3>
-                                <pre className="p-3 bg-gray-900 rounded-lg text-sm overflow-x-auto text-gray-100 font-mono">
-                                    {getPythonExample(activeTab)}
-                                </pre>
+                                ))}
+                            </div>
+
+                            <div className="p-4 space-y-4">
+                                <div>
+                                    <h3 className="flex items-center justify-between font-medium mb-2 text-gray-900 dark:text-base-content">
+                                        <span className="flex items-center gap-2">
+                                            <Terminal size={16} />
+                                            {t('proxy.example.curl')}
+                                        </span>
+                                        <button
+                                            onClick={() => copyToClipboard(getCurlExample(activeTab), 'curl')}
+                                            className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                                        >
+                                            {copied === 'curl' ? <CheckCircle size={14} /> : <Copy size={14} />}
+                                            {copied === 'curl' ? t('proxy.config.btn_copied') : t('proxy.config.btn_copy')}
+                                        </button>
+                                    </h3>
+                                    <pre className="p-3 bg-gray-900 rounded-lg text-sm overflow-x-auto text-gray-100 font-mono">
+                                        {getCurlExample(activeTab)}
+                                    </pre>
+                                </div>
+
+                                <div>
+                                    <h3 className="flex items-center justify-between font-medium mb-2 text-gray-900 dark:text-base-content">
+                                        <span className="flex items-center gap-2">
+                                            <Code size={16} />
+                                            {t('proxy.example.python')}
+                                        </span>
+                                        <button
+                                            onClick={() => copyToClipboard(getPythonExample(activeTab), 'python')}
+                                            className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                                        >
+                                            {copied === 'python' ? <CheckCircle size={14} /> : <Copy size={14} />}
+                                            {copied === 'python' ? t('proxy.config.btn_copied') : t('proxy.config.btn_copy')}
+                                        </button>
+                                    </h3>
+                                    <pre className="p-3 bg-gray-900 rounded-lg text-sm overflow-x-auto text-gray-100 font-mono">
+                                        {getPythonExample(activeTab)}
+                                    </pre>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-            </div>
-        </div>
+                    )
+                }
+            </div >
+        </div >
     );
 }

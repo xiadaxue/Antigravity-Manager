@@ -155,6 +155,7 @@
         "tabs": {
             "general": "通用",
             "account": "账号",
+            "proxy": "代理设置",
             "advanced": "高级",
             "about": "关于"
         },
@@ -241,7 +242,15 @@
             "btn_copied": "已复制",
             "warning_key": "注意：请妥善保管您的 API 密钥，不要泄露给他人。",
             "request_timeout": "请求超时",
-            "request_timeout_hint": "默认 120 秒，范围 30-600 秒。修改后需重启服务生效。"
+            "request_timeout_hint": "默认 120 秒，范围 30-600 秒。修改后需重启服务生效。",
+            "upstream_proxy": {
+                "title": "全局上游代理 (Global Proxy)",
+                "desc": "开启后，应用内所有外部请求（API 反代、Token 刷新、配额查询、更新检测）都将通过此代理。",
+                "enable": "启用上游代理",
+                "url": "代理地址",
+                "url_placeholder": "例如: http://127.0.0.1:7890 或 socks5://127.0.0.1:7890",
+                "tip": "支持 HTTP、HTTPS 和 SOCKS5 协议。"
+            }
         },
         "example": {
             "title": "使用示例",
